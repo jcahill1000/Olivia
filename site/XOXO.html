@@ -4,60 +4,64 @@
         <title>Noughts and Crosses</title>
         <style>
             .row div {
-                padding: 10px;
+                padding: 40px;
                 border: 1px solid black;
-                height: 30px;
-                width: 30px;
+                height: 90px;
+                width: 90px;
                 float: left;
+                text-align: center;
+                background-color: fuchsia;
+                font-size: 80px;
+                color: rgba(170, 58, 170, 0.952);
             }
             .row {
                 clear:both;
             }
+            body {
+                background-color: #00ffff;
+            }
 
 
         </style>
+        <script src="sounds.js" type="text/javascript"></script>
     </head>
     <body>
         <script>
             function place(box) {
-                if(box.innerText != "") return;
+                if(box.innerText != "" || won) return;
                 box.innerText = currentPlayer;
                 currentPlayer == "O" ? currentPlayer = "X" : currentPlayer = "O";
                 checkGameBoard();
             }
             var currentPlayer = "O";
+            var won = false;
+            var tada = new sound("tada.wav");
             function checkGameBoard() {
-                for(var i = 0; i<=2; i++) {
-                    var first = document.getElementById(i + "_0").innerText;
-                    var second = document.getElementById(i + "_1").innerText;
-                    var third = document.getElementById(i + "_2").innerText;
-                    if(first == "") return;
-                    if(first == second && first == third) {
-                        alert("Winner!");
-                    }
+                for(var i = 0; i <= 2; i++) {
+                checkWinner(document.getElementById(i + "_0").innerText,
+                            document.getElementById(i + "_1").innerText,
+                            document.getElementById(i + "_2").innerText);
+                checkWinner(document.getElementById("0_" + i).innerText,
+                            document.getElementById("1_" + i).innerText,
+                            document.getElementById("2_" + i).innerText);
+
                 }
-                    for(var i = 0; i<=2; i++) {
-                    var first = document.getElementById("0_" + i).innerText;
-                    var second = document.getElementById("1_" + i).innerText;
-                    var third = document.getElementById("2_" + i).innerText;
-                    if(first == "") return;
-                    if(first == second && first == third) {
-                        alert("Winner!");
-                    }
-                }
-                    var firstD1 = document.getElementById("0_0").innerText;
-                    var secondD1 = document.getElementById("1_1").innerText;
-                    var thirdD1 = document.getElementById("2_2").innerText;
-                    if(firstD1 != "" && firstD1 == secondD1 && firstD1 == thirdD1) {
-                        alert("Winner!");
-                    }
-                    var firstD2 = document.getElementById("0_2").innerText;
-                    var secondD2 = document.getElementById("1_1").innerText;
-                    var thirdD2 = document.getElementById("2_0").innerText;
-                    if(firstD2 != "" && firstD2 == secondD2 && firstD2 == thirdD2) {
-                        alert("Winner!");
-                    }
+                checkWinner(document.getElementById("0_0").innerText,
+                            document.getElementById("1_1").innerText,
+                            document.getElementById("2_2").innerText);
+                checkWinner(document.getElementById("0_2").innerText,
+                            document.getElementById("1_1").innerText,
+                            document.getElementById("2_0").innerText);
+                    
             }
+            function checkWinner(first, second, third) {
+                if(first != "" && first == second && first == third) {
+                    alert("Winner!");
+                    playSound("dead", {volume: .4});
+                    won = true;
+                }
+            }
+            
             
         </script>
         
