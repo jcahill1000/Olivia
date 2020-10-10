@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Snake</title>
+
+    </head>
+    <body>
+        <canvas id="canvas" width="300" height="300"></canvas> </br>
+       <!--  <input type="button" onclick="draw()" value="draw"/> </br>
+        <input type="button" onclick="remove()" value="clear"/> </br> -->
+        <!-- <button onclick="splitString()">Try Me</button>
+        <p id="answer"></p> -->
+        <script>
+            var canvas=document.getElementById("canvas");
+            var ctx=canvas.getContext("2d");
+            var currentYoffset = 0;
+            var squareSize = 30;
+            /* function draw() {
+                ctx.fillStyle = "violet";
+                ctx.fillRect(0,0,30,30);
+            }
+            function remove() {
+                ctx.clearRect(0,0,300,300);
+            }
+            var theCahills = ["Joseph", "Loredana", "Julia", "Olivia"]; */
+            var board = ["###############",
+                         "#             #",
+                         "#             #"
+                        ];
+            /* theCahills.forEach(function sayName(name) {alert(name);});
+            function splitString() {
+                var string="Olivia Cahill";
+                var value = string.split('');
+                document.getElementById("answer").innerHTML = value;
+            } */
+            board.forEach(function checkLine(line) {
+                line = line.split('');
+                var currentXoffset = 0;
+                line.forEach(function checkCharacter(character) {
+                    if(character == '#') {
+                        ctx.fillStyle = "magenta";
+                        ctx.fillRect(currentXoffset, currentYoffset, squareSize, squareSize);
+                    }
+                    currentXoffset += squareSize;
+                });
+                currentYoffset += squareSize;
+            });
+        </script>
+        
+    </body>
+</html>
