@@ -8,30 +8,77 @@
         <script>
             var game = {
                 tickNumber: 0,
-                timer: null, 
+                timer: null,
+                score: 0, 
                 board: [
-                    "###############",
-                    "#             #",
-                    "#             #",
-                    "#             #",
-                    "#    ####     #",
-                    "#    ####     #",
-                    "#             #",
-                    "#             #",
-                    "#             #",
-                    "###############"
+                    "#####################",
+                    "#                   #",
+                    "#                   #",
+                    "#      ###          #",
+                    "#       ###         #",
+                    "#                   #",
+                    "#     #             #",
+                    "#    ###            #",
+                    "#     #             #",
+                    "#    ####           #",
+                    "#    ####           #",
+                    "#                   #",
+                    "#            #      #",
+                    "#                   #",
+                    "#####################"
+                ],
+                fruit: [
+                    {x: 1, y: 1}
                 ],
                 tick: function() {
                     window.clearTimeout(game.timer);
                     game.tickNumber++;
-                    snake.move();
+                    if(game.tickNumber % 10 == 0) {
+                        game.addRandomFruit();
+                    }
+                    var result = snake.move();
+                    if(result == "gameover") {
+                        alert("Game Over! Player scored: " + game.score);
+                        return;
+                    }
                     graphics.drawGame();
                     game.timer = window.setTimeout("game.tick()", 500);
 
                 },
+                addRandomFruit: function() {
+                    var randomY = Math.floor(Math.random() * game.board.length) + 0;
+                    var randomX = Math.floor(Math.random() * game.board[randomY].length) + 0;
+                    var randomLocation = {x: randomX, y: randomY};
+                    if(game.isEmpty(randomLocation) && !game.isFruit(randomLocation)) {
+                        game.fruit.push(randomLocation);
+                    }
+                },
                 isEmpty: function(location) {
                     var contents = game.board[location.y][location.x];
                     return contents == ' ';
+                },
+                isWall: function(location) {
+                    return game.board[location.y][location.x] == '#';
+
+                },
+                isFruit: function(location) {
+                    for(var fruitNumber = 0; fruitNumber < game.fruit.length; fruitNumber++) {
+                        var fruit = game.fruit[fruitNumber];
+                        if(location.x == fruit.x && location.y == fruit.y) {
+                            game.fruit.splice(fruitNumber, 1);
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                isSnake: function(location) {
+                    for(var snakePart = 0; snakePart < snake.parts.length; snakePart++) {
+                        var part = snake.parts[snakePart];
+                        if(location.x == part.x && location.y == part.y) {
+                            return true;
+                        }
+                    }
+                    return false;
                 }
             };
             var snake = {
@@ -54,9 +101,17 @@
                 },
                 move:function() {
                     var location = snake.nextLocation();
+                    if(game.isWall(location) || game.isSnake(location)) {
+                        return "gameover";
+                    }
                     if(game.isEmpty(location)) {
                         snake.parts.unshift(location);
                         snake.parts.pop();
+                    }
+                   
+                    if(game.isFruit(location)) {
+                        snake.parts.unshift(location);
+                        game.score++;
                     }
                 }
             };
@@ -78,19 +133,20 @@
                     currentYoffset += graphics.squareSize;
                 });
             },
-            drawSnake: function(ctx) {
-                snake.parts.forEach(function drawPart(part) {
+            draw: function(ctx, source, color) {
+                source.forEach(function(part) {
                     var partXlocation = part.x * graphics.squareSize;
                     var partYlocation = part.y * graphics.squareSize;
-                    ctx.fillStyle = "purple";
+                    ctx.fillStyle = color;
                     ctx.fillRect(partXlocation, partYlocation, graphics.squareSize, graphics.squareSize);
                 });
             },
             drawGame: function () {
                 var ctx = graphics.canvas.getContext("2d");
                 ctx.clearRect(0,0,graphics.canvas.width, graphics.canvas.height);
-                graphics.drawBoard(ctx);
-                graphics.drawSnake(ctx);
+                graphics.drawBoard(ctx); 
+               graphics.draw(ctx, game.fruit, "yellow");
+               graphics.draw(ctx, snake.parts, "purple");
             }
         };
         graphics.drawGame();
@@ -98,10 +154,10 @@
             processInput: function(keyPressed) {
                 var key = keyPressed.key.toLowerCase();
                 var targetDirection = snake.facing;
-                if(key == "w") targetDirection = "N";
-                if(key == "a") targetDirection = "W";
-                if(key == "s") targetDirection = "S";
-                if(key == "d") targetDirection = "E";
+                if(key == "8" && snake.facing != "S") targetDirection = "N";
+                if(key == "4" && snake.facing != "E") targetDirection = "W";
+                if(key == "6" && snake.facing != "W") targetDirection = "E";
+                if(key == "2" && snake.facing != "N") targetDirection = "S";
                 snake.facing = targetDirection;
                 game.tick();
 
